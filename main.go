@@ -1,11 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"sort"
 	"strings"
-	
-	// "github.com/iancoleman/strcase"
+
 	"golang.org/x/exp/maps"
 )
 
@@ -25,14 +26,17 @@ var topics = map[int]string{
 	0:  "All",
 }
 
+const ColorRed = "\033[0;31m"
+const ColorNone = "\033[0m"
+
 func main() {
 	fmt.Println("What topic you want to train?")
 	showTopics()
 	words := chooseTopic()
 	point := float64(0)
 
-	processGame(words, point)
-	getResult(point, words)
+	words, point = processGame(words, point)
+	getResult(words, point)
 }
 
 func showTopics() {
@@ -50,7 +54,7 @@ func chooseTopic() map[string]string {
 	var topicChosen int
 	fmt.Scan(&topicChosen)
 	words := map[string]string{}
-	
+
 	switch topicChosen {
 	case 1:
 		words = getPersonalPronouns()
@@ -93,27 +97,47 @@ func chooseTopic() map[string]string {
 	return words
 }
 
-func processGame(words map[string]string, point float64) {
+func processGame(words map[string]string, point float64) (map[string]string, float64) {
 	for ukr, eng := range words {
 		var userInput string
 		fmt.Printf("\n Guess the meaning of this word: %v \n", strings.ToUpper(ukr))
-		fmt.Scan(&userInput)
+
+		scanner := bufio.NewScanner(os.Stdin)
+		if scanner.Scan() {
+			userInput = scanner.Text()
+		}
 
 		if strings.ToLower(userInput) == strings.ToLower(eng) {
 			point++
 			fmt.Println("Great Job!")
-			fmt.Printf("Current point %v \n", point)
 		} else {
-			fmt.Printf("Error, the real meaning is : %v \n", strings.ToUpper(eng))
-			fmt.Printf("Current point %v \n", point)
+			fmt.Fprintf(
+				os.Stdout,
+				"%sError, the real meaning is : %v %s \n",
+				ColorRed,
+				strings.ToUpper(eng),
+				ColorNone)
+
 		}
 	}
+
+	return words, point
 }
 
-func getResult(point float64, words map[string]string) {
+func getResult(words map[string]string, point float64) {
 	fmt.Println("\nGame over!")
 	fmt.Printf("You made %v point on %v elements \n", point, len(words))
 
 	var result = point / float64(len(words)) * 100
-	fmt.Printf("You was right %v%% of the time \n", int(result))
+	fmt.Printf("You were right %v%% of the time \n", int(result))
+
+	if int(result) < 90 {
+		fmt.Fprintf(
+			os.Stdout,
+			"%sTRY AGAIN %s \n",
+			ColorRed,
+			ColorNone)
+
+		fmt.Printf("Current point %v \n", point)
+	}
 }

@@ -10,11 +10,10 @@ func getPersonalPronouns() map[string]string {
 		"ми my (pronounced: mih)":               "we",
 		"ви vy (pronounced: vee)":               "you",
 		"вони vony (pronounced: voh-nih)":       "they",
-		"хтось khtos (pronounced: kh-tos)":      "someone",
 		"Хтось Khtosʹ (pronounced: kh-tohs)":    "somebody",
 		"Щось Shchosʹ (pronounced: sh-chohs)":   "something",
 		"Десь Desʹ (pronounced: dehs)":          "somewhere",
-		"ніхто nikhhto (pronounced: neekh-toh)": "no one",
+		"ніхто nikhhto (pronounced: neekh-toh)": "nobody",
 		"всі vsi (pronounced: vsee)":            "everyone",
 	}
 }
