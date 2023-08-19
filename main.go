@@ -2,29 +2,32 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strings"
-
+	
+	// "github.com/iancoleman/strcase"
 	"golang.org/x/exp/maps"
 )
 
+var topics = map[int]string{
+	1:  "Personal Pronouns",
+	2:  "Demonstrative Pronouns",
+	3:  "Question Words",
+	4:  "Present Verbs",
+	5:  "Adjectives",
+	6:  "Prepositions",
+	7:  "Possessive Determiners",
+	8:  "Adverbs",
+	9:  "Colors",
+	10: "Dates",
+	11: "Conjunctions",
+	12: "Part of the House",
+	0:  "All",
+}
+
 func main() {
 	fmt.Println("What topic you want to train?")
-	fmt.Print(
-		`1] Personal Pronouns
-2] Demonstrative Pronouns
-3] Question Words
-4] Present Verbs
-5] Adjectives
-6] Prepositions
-7] Possessive Determiners
-8] Adverbs
-9] Colors
-10] Dates
-11] Conjunctions
-0] All
-`,
-	)
-	
+	showTopics()
 	words := chooseTopic()
 	point := float64(0)
 
@@ -32,11 +35,22 @@ func main() {
 	getResult(point, words)
 }
 
+func showTopics() {
+	keys := make([]int, 0)
+	for k, _ := range topics {
+		keys = append(keys, k)
+	}
+	sort.Ints(keys)
+	for _, k := range keys {
+		fmt.Println(k, "] ", topics[k])
+	}
+}
+
 func chooseTopic() map[string]string {
 	var topicChosen int
 	fmt.Scan(&topicChosen)
 	words := map[string]string{}
-
+	
 	switch topicChosen {
 	case 1:
 		words = getPersonalPronouns()
@@ -60,6 +74,8 @@ func chooseTopic() map[string]string {
 		words = getDates()
 	case 11:
 		words = getConjunctions()
+	case 12:
+		words = getPartOfHouse()
 	case 0:
 		words = getPersonalPronouns()
 		maps.Copy(words, getDemonstrativePronouns())
@@ -71,6 +87,7 @@ func chooseTopic() map[string]string {
 		maps.Copy(words, getAdverb())
 		maps.Copy(words, getColors())
 		maps.Copy(words, getDates())
+		maps.Copy(words, getPartOfHouse())
 	}
 
 	return words
